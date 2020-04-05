@@ -1,0 +1,8 @@
+#!/usr/bin/with-contenv bash
+echo "STARTING SERVICE: Radarr"
+UMASK_SET=${UMASK_SET:-000}
+umask ${UMASK_SET}
+
+/bin/s6-setuidgid abc s6-setuidgid abc /usr/bin/mono --debug /app/Radarr.exe \
+    --no-browser \
+    -data=/config
