@@ -1,4 +1,4 @@
-FROM nforceroh/d_alpine-s6:dev
+FROM nforceroh/d_alpine-s6:edge
 
 LABEL maintainer="sylvain@nforcer.com"
 
@@ -12,7 +12,7 @@ ENV \
 	ENABLE_NFS=false 
 
 RUN \
-    apk add --no-cache mono \
+    apk add --no-cache mono mediainfo --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     && echo "**** install app ****" \
     && mkdir /app \
     && radarr_tag=$(curl -sX GET "https://api.github.com/repos/Radarr/Radarr/releases" | awk '/tag_name/{print $4;exit}' FS='[""]') \

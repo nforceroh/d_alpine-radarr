@@ -15,8 +15,13 @@ else
 endif
 
 
-#.PHONY: setupbuild
-all: build push gitcommit gitpush
+.PHONY: context all build push gitcommit gitpush
+all: context build push 
+git: context gitcommit gitpush
+
+context: 
+	@echo "Switching docker context to default"
+	docker context use default
 
 build: 
 	@echo "Building $(IMG_NAME)image"
@@ -34,7 +39,7 @@ gitcommit:
 
 gitpush:
 	@echo "Building $(IMG_NAME):$(VERSION) image"
-	git tag -a $(VERSION) -m "Update to $(VERSION)"
+	-git tag -a $(VERSION) -m "Update to $(VERSION)"
 	git push --tags
 
 push: 
