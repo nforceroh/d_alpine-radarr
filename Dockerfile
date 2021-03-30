@@ -1,6 +1,19 @@
 FROM nforceroh/d_alpine-s6:edge
 
-LABEL maintainer="sylvain@nforcer.com"
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VERSION
+
+LABEL \
+  org.label-schema.build-date=$BUILD_DATE \
+  org.label-schema.name="d_alpine-radarr" \
+  org.label-schema.description="Radarr docker container on alpine linux" \
+  org.label-schema.url="https://github.com/nforceroh/d_alpine-radarr" \
+  org.label-schema.vcs-ref=$VCS_REF \
+  org.label-schema.vcs-url="https://github.com/nforceroh/d_alpine-radarr" \
+  org.label-schema.vendor="nforceroh" \
+  org.label-schema.version=$VERSION \
+  org.label-schema.schema-version="1.0"
 
 ENV \ 
     PYTHONIOENCODING=UTF-8 \
@@ -12,11 +25,12 @@ ENV \
 	ENABLE_NFS=false 
 
 RUN \
-    apk add --no-cache mono mediainfo --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+    apk update \
+    && apk upgrade \
+    && apk add --no-cache curl  mediainfo sqlite3 --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     && echo "**** install app ****" \
     && mkdir /app \
-    && radarr_tag=$(curl -sX GET "https://api.github.com/repos/Radarr/Radarr/releases" | awk '/tag_name/{print $4;exit}' FS='[""]') \
-    && wget "https://github.com/Radarr/Radarr/releases/download/${radarr_tag}/Radarr.develop.${radarr_tag#v}.linux.tar.gz" -O /tmp/radarr.tar.gz \
+    && wget --content-disposition 'http://radarr.servarr.com/v1/update/master/updatefile?os=linux&runtime=netcore&arch=x64' -O /tmp/radarr.tar.gz \
     && tar vxzf /tmp/radarr.tar.gz -C /app --strip-components=1 \
     && rm /tmp/radarr.tar.gz \
     && rm -rf /var/cache/apk/*
@@ -26,4 +40,5 @@ COPY rootfs /
 EXPOSE 7878
 WORKDIR /app
 VOLUME /config
-ENTRYPOINT [ "/init" ]
+ENTRYPOINT [ "/bin/bash" ]
+#ENTRYPOINT [ "/init" ]
