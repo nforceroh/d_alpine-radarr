@@ -3,4 +3,4 @@ echo "STARTING SERVICE: Radarr"
 UMASK_SET=${UMASK_SET:-000}
 umask ${UMASK_SET}
 
-/bin/s6-setuidgid abc /app/Radarr.exe --no-browser -data=/config
+/bin/s6-setuidgid abc /app/Radarr --no-browser -data=/config

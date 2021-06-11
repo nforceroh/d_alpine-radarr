@@ -25,12 +25,14 @@ ENV \
 	ENABLE_NFS=false 
 
 RUN \
-    apk update \
+    echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
+    && apk update \
     && apk upgrade \
-    && apk add --no-cache curl  mediainfo sqlite3 --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+    && apk add --no-cache curl  mediainfo sqlite bash icu-libs krb5-libs libgcc \
+        libgdiplus libintl libssl1.1 libstdc++ zlib \
     && echo "**** install app ****" \
     && mkdir /app \
-    && wget --content-disposition 'http://radarr.servarr.com/v1/update/master/updatefile?os=linux&runtime=netcore&arch=x64' -O /tmp/radarr.tar.gz \
+    && wget 'https://radarr.servarr.com/v1/update/master/updatefile?os=linuxmusl&runtime=netcore&arch=x64' -O /tmp/radarr.tar.gz \
     && tar vxzf /tmp/radarr.tar.gz -C /app --strip-components=1 \
     && rm /tmp/radarr.tar.gz \
     && rm -rf /var/cache/apk/*
@@ -40,5 +42,4 @@ COPY rootfs /
 EXPOSE 7878
 WORKDIR /app
 VOLUME /config
-ENTRYPOINT [ "/bin/bash" ]
-#ENTRYPOINT [ "/init" ]
+ENTRYPOINT [ "/init" ]
